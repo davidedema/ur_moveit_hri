@@ -3,7 +3,10 @@ logs/
 build/
 bin/
 lib/
+<<<<<<< HEAD
 install/
+=======
+>>>>>>> 985dc9d0b9b54d079cef81466288c45a86376c4f
 msg_gen/
 srv_gen/
 msg/*Action.msg
