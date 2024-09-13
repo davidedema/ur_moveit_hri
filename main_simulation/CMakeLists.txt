@@ -32,9 +32,34 @@ install(TARGETS
     collision_loader_node
     DESTINATION lib/${PROJECT_NAME})
 
+
+add_executable(motion_node src/motion_node.cpp)
+
+ament_target_dependencies(motion_node
+    geometry_msgs
+    rclcpp
+    std_msgs
+    moveit_ros_planning_interface
+    moveit_ros_move_group
+    moveit_msgs
+    moveit_servo
+)
+
+target_compile_features(motion_node PUBLIC c_std_99 cxx_std_17)
+
+
+install(TARGETS
+    motion_node
+    DESTINATION lib/${PROJECT_NAME})
+
 install(
-  DIRECTORY launch urdf rviz config srdf
+  DIRECTORY launch urdf rviz config srdf scripts
   DESTINATION share/${PROJECT_NAME}
+)
+
+install(PROGRAMS
+  scripts/gripper_controller.py
+  DESTINATION lib/${PROJECT_NAME}
 )
 
 # uncomment the following section in order to fill in
