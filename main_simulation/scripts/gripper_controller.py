@@ -2,11 +2,12 @@
 
 import os
 import socket
-
+import time
 import rclpy
 from ament_index_python.packages import get_package_share_directory
 from rclpy.node import Node
 from std_msgs.msg import String
+from std_srvs.srv import Trigger
 
 
 class GripperController(Node):
@@ -50,6 +51,17 @@ class GripperController(Node):
                 while l:
                     self.s.send(l)
                     l = f.read(2024)
+                    
+            time.sleep(1.0)
+                    
+            # Call service /io_and_status_controller/resend_robot_program sending std_srvs/srv/Trigger
+            client = self.create_client(Trigger, "/io_and_status_controller/resend_robot_program")
+            while not client.wait_for_service(timeout_sec=1.0):
+                self.get_logger().info("Service not available, waiting again...")
+            request = Trigger.Request()
+            future = client.call_async(request)
+            
+            
         except FileNotFoundError:
             self.get_logger().error(f"Script file {script} not found.")
         except Exception as e:

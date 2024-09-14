@@ -21,7 +21,7 @@
    <xacro:arg name="safety_pos_margin" default="0.15"/>
    <xacro:arg name="safety_k_position" default="20"/>
    <!-- ros2_control related parameters -->
-   <xacro:arg name="headless_mode" default="false" />
+   <xacro:arg name="headless_mode" default="true" />
    <xacro:arg name="robot_ip" default="0.0.0.0" />
    <xacro:arg name="script_filename" default=""/>
    <xacro:arg name="output_recipe_filename" default=""/>
