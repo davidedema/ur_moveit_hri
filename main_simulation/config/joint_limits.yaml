@@ -9,29 +9,29 @@ joint_limits:
     has_acceleration_limits: true
     has_velocity_limits: true
     max_acceleration: 5.0
-    max_velocity: 0.2
+    max_velocity: 0.9
   shoulder_lift_joint:
     has_acceleration_limits: true
     has_velocity_limits: true
     max_acceleration: 5.0
-    max_velocity: 0.2
+    max_velocity: 0.9
   elbow_joint:
     has_acceleration_limits: true
     has_velocity_limits: true
     max_acceleration: 5.0
-    max_velocity: 0.2
+    max_velocity: 0.9
   wrist_1_joint:
     has_acceleration_limits: true
     has_velocity_limits: true
     max_acceleration: 5.0
-    max_velocity: 0.2
+    max_velocity: 0.9
   wrist_2_joint:
     has_acceleration_limits: true
     has_velocity_limits: true
     max_acceleration: 5.0
-    max_velocity: 0.2
+    max_velocity: 0.9
   wrist_3_joint:
     has_acceleration_limits: true
     has_velocity_limits: true
     max_acceleration: 5.0
-    max_velocity: 0.6
+    max_velocity: 1.0
