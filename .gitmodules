@@ -13,3 +13,15 @@
 	path = Universal_Robots_ROS2_Gazebo_Simulation
 	url = https://github.com/UniversalRobots/Universal_Robots_ROS2_Gazebo_Simulation.git
 	branch = humble
+[submodule "moveit2"]
+	path = moveit2
+	url = https://github.com/moveit/moveit2.git
+	branch = humble
+[submodule "moveit_resources"]
+	path = moveit_resources
+	url = https://github.com/moveit/moveit_resources.git
+	branch = humble
+[submodule "moveit_msgs"]
+	path = moveit_msgs
+	url = https://github.com/moveit/moveit_msgs.git
+	branch = humble
