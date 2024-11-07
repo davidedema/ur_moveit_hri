@@ -50,7 +50,7 @@
    <xacro:arg name="simulation_controllers" default="" />
 
    <!-- initial position for simulations (Fake Hardware, Gazebo, Ignition) -->
-   <xacro:arg name="initial_positions_file" default="$(find ur_description)/config/initial_positions.yaml"/>
+   <xacro:arg name="initial_positions_file" default="$(find main_simulation)/config/initial_positions.yaml"/>
 
    <!-- convert to property to use substitution in function -->
    <xacro:property name="initial_positions_file" default="$(arg initial_positions_file)"/>
@@ -96,7 +96,7 @@
      script_sender_port="$(arg script_sender_port)"
      trajectory_port="$(arg trajectory_port)"
      >
-     <origin xyz="0 0 0" rpy="0 0 0" />          <!-- position robot in the world -->
+     <origin xyz="0 0 1.79" rpy="3.14159 0 3.14159" />          <!-- position robot in the world -->
    </xacro:ur_robot>
    
      <!-- Gripper -->

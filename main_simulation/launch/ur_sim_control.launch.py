@@ -116,13 +116,22 @@ def launch_setup(context, *args, **kwargs):
         name="rviz2",
         output="log",
         arguments=["-d", rviz_config_file],
+        condition=IfCondition(launch_rviz),
     )
-    
-    joint_state_publisher_node = Node(
-        package="joint_state_publisher",
-        executable="joint_state_publisher",
-        output="both",
-        parameters=[{"use_sim_time": True}, robot_description],
+
+    joint_state_broadcaster_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
+    )
+
+    # Delay rviz start after `joint_state_broadcaster`
+    delay_rviz_after_joint_state_broadcaster_spawner = RegisterEventHandler(
+        event_handler=OnProcessExit(
+            target_action=joint_state_broadcaster_spawner,
+            on_exit=[rviz_node],
+        ),
+        condition=IfCondition(launch_rviz),
     )
 
     # There may be other controllers of the joints, but this is the initially-started one
@@ -146,6 +155,7 @@ def launch_setup(context, *args, **kwargs):
         ),
         launch_arguments={
             "gui": gazebo_gui,
+            "world": "/home/davide/Desktop/ws_ur/src/main_simulation/worlds/lab.world"
         }.items(),
     )
 
@@ -160,10 +170,10 @@ def launch_setup(context, *args, **kwargs):
 
     nodes_to_start = [
         robot_state_publisher_node,
-        joint_state_publisher_node,
+        joint_state_broadcaster_spawner,
+        delay_rviz_after_joint_state_broadcaster_spawner,
         initial_joint_controller_spawner_stopped,
         initial_joint_controller_spawner_started,
-        rviz_node,
         gazebo,
         gazebo_spawn_robot,
     ]
@@ -253,12 +263,12 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "initial_joint_controller",
-            default_value="scaled_joint_trajectory_controller",
+            default_value="joint_trajectory_controller",
             description="Robot controller to start.",
         )
     )
     declared_arguments.append(
-        DeclareLaunchArgument("launch_rviz", default_value="false", description="Launch RViz?")
+        DeclareLaunchArgument("launch_rviz", default_value="true", description="Launch RViz?")
     )
     declared_arguments.append(
         DeclareLaunchArgument(

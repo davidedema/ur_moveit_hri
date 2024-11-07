@@ -61,7 +61,7 @@ def launch_setup(context, *args, **kwargs):
             "description_package": description_package,
             "description_file": description_file,
             "prefix": prefix,
-            "launch_rviz": "true",
+            "launch_rviz": "false",
         }.items(),
     )
 
