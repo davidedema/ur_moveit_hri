@@ -53,7 +53,8 @@ def launch_setup(context, *args, **kwargs):
     safety_k_position = LaunchConfiguration("safety_k_position")
     # General arguments
     runtime_config_package = LaunchConfiguration("runtime_config_package")
-    controllers_file = LaunchConfiguration("controllers_file")
+    controllers_file_ur5 = LaunchConfiguration("controllers_file_ur5")
+    controllers_file_ur3 = LaunchConfiguration("controllers_file_ur3")
     description_package = LaunchConfiguration("description_package")
     description_file_ur5 = LaunchConfiguration("description_file_ur5")
     description_file_ur3 = LaunchConfiguration("description_file_ur3")
@@ -64,8 +65,11 @@ def launch_setup(context, *args, **kwargs):
     launch_rviz = LaunchConfiguration("launch_rviz")
     gazebo_gui = LaunchConfiguration("gazebo_gui")
 
-    initial_joint_controllers = PathJoinSubstitution(
-        [FindPackageShare(runtime_config_package), "config", controllers_file]
+    initial_joint_controllers_ur5 = PathJoinSubstitution(
+        [FindPackageShare(runtime_config_package), "config", controllers_file_ur5]
+    )
+    initial_joint_controllers_ur3 = PathJoinSubstitution(
+        [FindPackageShare(runtime_config_package), "config", controllers_file_ur3]
     )
 
     rviz_config_file = PathJoinSubstitution(
@@ -101,7 +105,7 @@ def launch_setup(context, *args, **kwargs):
             "sim_gazebo:=true",
             " ",
             "simulation_controllers:=",
-            initial_joint_controllers,
+            initial_joint_controllers_ur3,
         ]
     )
     
@@ -135,7 +139,7 @@ def launch_setup(context, *args, **kwargs):
             "sim_gazebo:=true",
             " ",
             "simulation_controllers:=",
-            initial_joint_controllers,
+            initial_joint_controllers_ur5,
         ]
     )
     robot_ur5_description = {"robot_description": robot_ur5_description_content}
@@ -144,12 +148,14 @@ def launch_setup(context, *args, **kwargs):
     robot_ur5_state_publisher_node = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
+        namespace="robot1",
         output="both",
         parameters=[{"use_sim_time": True}, robot_ur5_description],
     )
     robot_ur3_state_publisher_node = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
+        namespace="robot2",
         output="both",
         parameters=[{"use_sim_time": True}, robot_ur3_description],
     )
@@ -191,6 +197,35 @@ def launch_setup(context, *args, **kwargs):
         arguments=[initial_joint_controller, "-c", "/controller_manager", "--stopped"],
         condition=UnlessCondition(start_joint_controller),
     )
+    
+    joint_state_broadcaster_spawner_ur3 = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
+    )
+
+    # Delay rviz start after `joint_state_broadcaster`
+    delay_rviz_after_joint_state_broadcaster_spawner_ur3 = RegisterEventHandler(
+        event_handler=OnProcessExit(
+            target_action=joint_state_broadcaster_spawner_ur3,
+            on_exit=[rviz_node],
+        ),
+        condition=IfCondition(launch_rviz),
+    )
+
+    # There may be other controllers of the joints, but this is the initially-started one
+    initial_joint_controller_spawner_started_ur3 = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=[initial_joint_controller, "-c", "/controller_manager"],
+        condition=IfCondition(start_joint_controller),
+    )
+    initial_joint_controller_spawner_stopped_ur3 = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=[initial_joint_controller, "-c", "/controller_manager", "--stopped"],
+        condition=UnlessCondition(start_joint_controller),
+    )
 
     # Gazebo nodes
     gazebo = IncludeLaunchDescription(
@@ -204,23 +239,39 @@ def launch_setup(context, *args, **kwargs):
     )
 
     # Spawn robot
-    gazebo_spawn_robot = Node(
+    gazebo_spawn_robot1 = Node(
         package="gazebo_ros",
         executable="spawn_entity.py",
+        namespace="robot1",
         name="spawn_ur",
-        arguments=["-entity", "ur", "-topic", "robot_description"],
+        arguments=["-entity", "ur5", "-topic", "robot_description"],
+        output="screen",
+    )
+    gazebo_spawn_robot2 = Node(
+        package="gazebo_ros",
+        executable="spawn_entity.py",
+        namespace="robot2",
+        name="spawn_ur",
+        arguments=["-entity", "ur3", "-topic", "robot_description"],
         output="screen",
     )
 
     nodes_to_start = [
         robot_ur5_state_publisher_node,
         robot_ur3_state_publisher_node,
+        
         joint_state_broadcaster_spawner,
         delay_rviz_after_joint_state_broadcaster_spawner,
         initial_joint_controller_spawner_stopped,
         initial_joint_controller_spawner_started,
+        
+        joint_state_broadcaster_spawner_ur3,
+        delay_rviz_after_joint_state_broadcaster_spawner_ur3,
+        initial_joint_controller_spawner_stopped_ur3,
+        initial_joint_controller_spawner_started_ur3,
         gazebo,
-        gazebo_spawn_robot,
+        gazebo_spawn_robot1,
+        gazebo_spawn_robot2,
     ]
 
     return nodes_to_start
@@ -270,15 +321,22 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "runtime_config_package",
-            default_value="ur_simulation_gazebo",
+            default_value="main_simulation",
             description='Package with the controller\'s configuration in "config" folder. \
         Usually the argument is not set, it enables use of a custom setup.',
         )
     )
     declared_arguments.append(
         DeclareLaunchArgument(
-            "controllers_file",
-            default_value="ur_controllers.yaml",
+            "controllers_file_ur5",
+            default_value="ur5_controllers.yaml",
+            description="YAML file with the controllers configuration.",
+        )
+    )
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "controllers_file_ur3",
+            default_value="ur3_controllers.yaml",
             description="YAML file with the controllers configuration.",
         )
     )
