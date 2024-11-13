@@ -96,7 +96,7 @@
      script_sender_port="$(arg script_sender_port)"
      trajectory_port="$(arg trajectory_port)"
      >
-     <origin xyz="0 0 0" rpy="3.14159 0 3.14159" />          <!-- position robot in the world -->
+     <origin xyz="2 2 2" rpy="3.14159 0 3.14159" />          <!-- position robot in the world -->
    </xacro:ur_robot>
    
      <!-- Gripper -->
@@ -112,14 +112,18 @@
     </gazebo>
     <gazebo>
       <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
+        <ros>
+          <namespace>/robot2</namespace>
+          <remapping>/tf:=/robot2/tf</remapping>
+        </ros>
         <parameters>$(arg simulation_controllers)</parameters>
       </plugin>
     </gazebo>
   </xacro:if>
 
-  <xacro:if value="$(arg sim_ignition)">
+  <!-- <xacro:if value="$(arg sim_ignition)"> -->
     <!-- Gazebo plugins -->
-    <gazebo reference="world">
+    <!-- <gazebo reference="world">
     </gazebo>
     <gazebo>
       <plugin filename="libign_ros2_control-system.so" name="ign_ros2_control::IgnitionROS2ControlPlugin">
@@ -127,6 +131,6 @@
         <controller_manager_node_name>$(arg tf_prefix)controller_manager</controller_manager_node_name>
       </plugin>
     </gazebo>
-  </xacro:if>
+  </xacro:if> -->
 
 </robot>

@@ -94,12 +94,12 @@ def launch_setup(context, *args, **kwargs):
             safety_k_position,
             " ",
             "name:=",
-            "ur",
+            "ur3",
             " ",
             "ur_type:=",
             ur3_type,
             " ",
-            "prefix:=",
+            "tf_prefix:=",
             ur3_prefix,
             " ",
             "sim_gazebo:=true",
@@ -128,12 +128,12 @@ def launch_setup(context, *args, **kwargs):
             safety_k_position,
             " ",
             "name:=",
-            "ur",
+            "ur5",
             " ",
             "ur_type:=",
             ur5_type,
             " ",
-            "prefix:=",
+            "tf_prefix:=",
             ur5_prefix,
             " ",
             "sim_gazebo:=true",
@@ -172,7 +172,7 @@ def launch_setup(context, *args, **kwargs):
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
+        arguments=["joint_state_broadcaster", "--controller-manager", "/robot1/controller_manager"],
     )
 
     # Delay rviz start after `joint_state_broadcaster`
@@ -188,20 +188,20 @@ def launch_setup(context, *args, **kwargs):
     initial_joint_controller_spawner_started = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=[initial_joint_controller, "-c", "/controller_manager"],
+        arguments=[initial_joint_controller, "-c", "/robot1/controller_manager"],
         condition=IfCondition(start_joint_controller),
     )
     initial_joint_controller_spawner_stopped = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=[initial_joint_controller, "-c", "/controller_manager", "--stopped"],
+        arguments=[initial_joint_controller, "-c", "/robot1/controller_manager", "--stopped"],
         condition=UnlessCondition(start_joint_controller),
     )
     
     joint_state_broadcaster_spawner_ur3 = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
+        arguments=["joint_state_broadcaster", "--controller-manager", "/robot2/controller_manager"],
     )
 
     # Delay rviz start after `joint_state_broadcaster`
@@ -217,13 +217,13 @@ def launch_setup(context, *args, **kwargs):
     initial_joint_controller_spawner_started_ur3 = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=[initial_joint_controller, "-c", "/controller_manager"],
+        arguments=[initial_joint_controller, "-c", "/robot2/controller_manager"],
         condition=IfCondition(start_joint_controller),
     )
     initial_joint_controller_spawner_stopped_ur3 = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=[initial_joint_controller, "-c", "/controller_manager", "--stopped"],
+        arguments=[initial_joint_controller, "-c", "/robot2/controller_manager", "--stopped"],
         condition=UnlessCondition(start_joint_controller),
     )
 
@@ -242,36 +242,34 @@ def launch_setup(context, *args, **kwargs):
     gazebo_spawn_robot1 = Node(
         package="gazebo_ros",
         executable="spawn_entity.py",
-        namespace="robot1",
         name="spawn_ur",
-        arguments=["-entity", "ur5", "-topic", "robot_description"],
+        arguments=["-entity", "ur5", "-topic", "/robot1/robot_description"],
         output="screen",
     )
     gazebo_spawn_robot2 = Node(
         package="gazebo_ros",
         executable="spawn_entity.py",
-        namespace="robot2",
         name="spawn_ur",
-        arguments=["-entity", "ur3", "-topic", "robot_description"],
+        arguments=["-entity", "ur3", "-topic", "/robot2/robot_description"],
         output="screen",
     )
 
     nodes_to_start = [
         robot_ur5_state_publisher_node,
-        robot_ur3_state_publisher_node,
+        # robot_ur3_state_publisher_node,
         
         joint_state_broadcaster_spawner,
         delay_rviz_after_joint_state_broadcaster_spawner,
         initial_joint_controller_spawner_stopped,
         initial_joint_controller_spawner_started,
         
-        joint_state_broadcaster_spawner_ur3,
-        delay_rviz_after_joint_state_broadcaster_spawner_ur3,
-        initial_joint_controller_spawner_stopped_ur3,
-        initial_joint_controller_spawner_started_ur3,
+        # joint_state_broadcaster_spawner_ur3,
+        # delay_rviz_after_joint_state_broadcaster_spawner_ur3,
+        # initial_joint_controller_spawner_stopped_ur3,
+        # initial_joint_controller_spawner_started_ur3,
         gazebo,
         gazebo_spawn_robot1,
-        gazebo_spawn_robot2,
+        # gazebo_spawn_robot2,
     ]
 
     return nodes_to_start
