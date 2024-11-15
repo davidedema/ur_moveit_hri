@@ -242,34 +242,36 @@ def launch_setup(context, *args, **kwargs):
     gazebo_spawn_robot1 = Node(
         package="gazebo_ros",
         executable="spawn_entity.py",
-        name="spawn_ur",
+        name="spawn_ur5",
+        namespace="robot1",
         arguments=["-entity", "ur5", "-topic", "/robot1/robot_description"],
         output="screen",
     )
     gazebo_spawn_robot2 = Node(
         package="gazebo_ros",
         executable="spawn_entity.py",
-        name="spawn_ur",
+        name="spawn_ur3",
+        namespace="robot2",
         arguments=["-entity", "ur3", "-topic", "/robot2/robot_description"],
         output="screen",
     )
 
     nodes_to_start = [
         robot_ur5_state_publisher_node,
-        # robot_ur3_state_publisher_node,
+        robot_ur3_state_publisher_node,
         
         joint_state_broadcaster_spawner,
         delay_rviz_after_joint_state_broadcaster_spawner,
         initial_joint_controller_spawner_stopped,
         initial_joint_controller_spawner_started,
         
-        # joint_state_broadcaster_spawner_ur3,
+        joint_state_broadcaster_spawner_ur3,
         # delay_rviz_after_joint_state_broadcaster_spawner_ur3,
-        # initial_joint_controller_spawner_stopped_ur3,
-        # initial_joint_controller_spawner_started_ur3,
+        initial_joint_controller_spawner_stopped_ur3,
+        initial_joint_controller_spawner_started_ur3,
         gazebo,
         gazebo_spawn_robot1,
-        # gazebo_spawn_robot2,
+        gazebo_spawn_robot2,
     ]
 
     return nodes_to_start

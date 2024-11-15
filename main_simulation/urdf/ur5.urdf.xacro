@@ -111,9 +111,12 @@
     <gazebo reference="world">
     </gazebo>
     <gazebo>
-      <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
+      <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control_robot1">
+        <parameters>$(find main_simulation)/config/ur5_controllers.yaml</parameters>
+        <controller_manager_prefix_node_name>/robot1</controller_manager_prefix_node_name>
+        <!-- <controller_manager_node_name>/robot1/controller_manager</controller_manager_node_name> -->
         <ros>
-          <namespace>/robot1</namespace>
+          <namespace>robot1</namespace>
           <remapping>/tf:=/robot1/tf</remapping>
         </ros>
         <parameters>$(arg simulation_controllers)</parameters>
