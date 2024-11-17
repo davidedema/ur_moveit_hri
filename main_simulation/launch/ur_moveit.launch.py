@@ -44,56 +44,73 @@ from launch.substitutions import Command, FindExecutable, LaunchConfiguration, P
 def launch_setup(context, *args, **kwargs):
 
     # Initialize Arguments
-    ur_type = LaunchConfiguration("ur_type")
+    ur5_type = LaunchConfiguration("ur5_type")
+    ur3_type = LaunchConfiguration("ur3_type")
     use_fake_hardware = LaunchConfiguration("use_fake_hardware")
     safety_limits = LaunchConfiguration("safety_limits")
     safety_pos_margin = LaunchConfiguration("safety_pos_margin")
     safety_k_position = LaunchConfiguration("safety_k_position")
     # General arguments
     description_package = LaunchConfiguration("description_package")
-    description_file = LaunchConfiguration("description_file")
+    description_file_ur3 = LaunchConfiguration("description_file_ur3")
+    description_file_ur5 = LaunchConfiguration("description_file_ur5")
     _publish_robot_description_semantic = LaunchConfiguration("publish_robot_description_semantic")
     moveit_config_package = LaunchConfiguration("moveit_config_package")
     moveit_joint_limits_file = LaunchConfiguration("moveit_joint_limits_file")
-    moveit_config_file = LaunchConfiguration("moveit_config_file")
+    ur5_moveit_config_file = LaunchConfiguration("ur5_moveit_config_file")
+    ur3_moveit_config_file = LaunchConfiguration("ur3_moveit_config_file")
     warehouse_sqlite_path = LaunchConfiguration("warehouse_sqlite_path")
-    prefix = LaunchConfiguration("prefix")
+    prefix_ur5 = LaunchConfiguration("ur5_prefix")
+    prefix_ur3 = LaunchConfiguration("ur3_prefix")
     use_sim_time = LaunchConfiguration("use_sim_time")
     launch_rviz = LaunchConfiguration("launch_rviz")
     launch_servo = LaunchConfiguration("launch_servo")
 
-    joint_limit_params = PathJoinSubstitution(
-        [FindPackageShare(description_package), "config", ur_type, "joint_limits.yaml"]
+    ur3_joint_limit_params = PathJoinSubstitution(
+        [FindPackageShare(description_package), "config", ur3_type, "joint_limits.yaml"]
     )
-    kinematics_params = PathJoinSubstitution(
-        [FindPackageShare(description_package), "config", ur_type, "default_kinematics.yaml"]
+    ur3_kinematics_params = PathJoinSubstitution(
+        [FindPackageShare(description_package), "config", ur3_type, "default_kinematics.yaml"]
     )
-    physical_params = PathJoinSubstitution(
-        [FindPackageShare(description_package), "config", ur_type, "physical_parameters.yaml"]
+    ur3_physical_params = PathJoinSubstitution(
+        [FindPackageShare(description_package), "config", ur3_type, "physical_parameters.yaml"]
     )
-    visual_params = PathJoinSubstitution(
-        [FindPackageShare(description_package), "config", ur_type, "visual_parameters.yaml"]
+    ur3_visual_params = PathJoinSubstitution(
+        [FindPackageShare(description_package), "config", ur3_type, "visual_parameters.yaml"]
+    )
+    
+    ur5_joint_limit_params = PathJoinSubstitution(
+        [FindPackageShare(description_package), "config", ur5_type, "joint_limits.yaml"]
+    )
+    ur5_kinematics_params = PathJoinSubstitution(
+        [FindPackageShare(description_package), "config", ur5_type, "default_kinematics.yaml"]
+    )
+    ur5_physical_params = PathJoinSubstitution(
+        [FindPackageShare(description_package), "config", ur5_type, "physical_parameters.yaml"]
+    )
+    ur5_visual_params = PathJoinSubstitution(
+        [FindPackageShare(description_package), "config", ur5_type, "visual_parameters.yaml"]
     )
 
-    robot_description_content = Command(
+    ur5_robot_description_content = Command(
         [
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
-            PathJoinSubstitution([FindPackageShare(description_package), "urdf", description_file]),
+            PathJoinSubstitution([FindPackageShare(description_package), "urdf", description_file_ur5]),
             " ",
             "robot_ip:=192.168.0.100",
             " ",
             "joint_limit_params:=",
-            joint_limit_params,
+            ur5_joint_limit_params,
             " ",
             "kinematics_params:=",
-            kinematics_params,
+            ur5_kinematics_params,
             " ",
             "physical_params:=",
-            physical_params,
+            ur5_physical_params,
             " ",
             "visual_params:=",
-            visual_params,
+            ur5_visual_params,
             " ",
             "safety_limits:=",
             safety_limits,
@@ -105,10 +122,10 @@ def launch_setup(context, *args, **kwargs):
             safety_k_position,
             " ",
             "name:=",
-            "ur",
+            "ur5",
             " ",
             "ur_type:=",
-            ur_type,
+            ur5_type,
             " ",
             "script_filename:=ros_control.urscript",
             " ",
@@ -116,33 +133,105 @@ def launch_setup(context, *args, **kwargs):
             " ",
             "output_recipe_filename:=rtde_output_recipe.txt",
             " ",
-            "prefix:=",
-            prefix,
+            "tf_prefix:=",
+            prefix_ur5,
             " ",
         ]
     )
-    robot_description = {"robot_description": robot_description_content}
+    
+    ur5_robot_description = {"robot_description": ur5_robot_description_content}
+    
+    
+    ur3_robot_description_content = Command(
+        [
+            PathJoinSubstitution([FindExecutable(name="xacro")]),
+            " ",
+            PathJoinSubstitution([FindPackageShare(description_package), "urdf", description_file_ur3]),
+            " ",
+            "robot_ip:=192.168.0.100",
+            " ",
+            "joint_limit_params:=",
+            ur3_joint_limit_params,
+            " ",
+            "kinematics_params:=",
+            ur3_kinematics_params,
+            " ",
+            "physical_params:=",
+            ur3_physical_params,
+            " ",
+            "visual_params:=",
+            ur3_visual_params,
+            " ",
+            "safety_limits:=",
+            safety_limits,
+            " ",
+            "safety_pos_margin:=",
+            safety_pos_margin,
+            " ",
+            "safety_k_position:=",
+            safety_k_position,
+            " ",
+            "name:=",
+            "ur3",
+            " ",
+            "ur_type:=",
+            ur3_type,
+            " ",
+            "script_filename:=ros_control.urscript",
+            " ",
+            "input_recipe_filename:=rtde_input_recipe.txt",
+            " ",
+            "output_recipe_filename:=rtde_output_recipe.txt",
+            " ",
+            "tf_prefix:=",
+            prefix_ur3,
+            " ",
+        ]
+    )
+    
+    ur3_robot_description = {"robot_description": ur3_robot_description_content}
+    
 
     # MoveIt Configuration
-    robot_description_semantic_content = Command(
+    ur5_robot_description_semantic_content = Command(
         [
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
             PathJoinSubstitution(
-                [FindPackageShare(moveit_config_package), "srdf", moveit_config_file]
+                [FindPackageShare(moveit_config_package), "srdf", ur5_moveit_config_file]
             ),
             " ",
             "name:=",
             # Also ur_type parameter could be used but then the planning group names in yaml
             # configs has to be updated!
-            "ur",
+            "ur5",
             " ",
             "prefix:=",
-            prefix,
+            prefix_ur5,
             " ",
         ]
     )
-    robot_description_semantic = {"robot_description_semantic": robot_description_semantic_content}
+    ur5_robot_description_semantic = {"robot_description_semantic": ur5_robot_description_semantic_content}
+    
+    ur3_robot_description_semantic_content = Command(
+        [
+            PathJoinSubstitution([FindExecutable(name="xacro")]),
+            " ",
+            PathJoinSubstitution(
+                [FindPackageShare(moveit_config_package), "srdf", ur3_moveit_config_file]
+            ),
+            " ",
+            "name:=",
+            # Also ur_type parameter could be used but then the planning group names in yaml
+            # configs has to be updated!
+            "ur3",
+            " ",
+            "prefix:=",
+            prefix_ur3,
+            " ",
+        ]
+    )
+    ur3_robot_description_semantic = {"robot_description_semantic": ur3_robot_description_semantic_content}
 
     publish_robot_description_semantic = {
         "publish_robot_description_semantic": _publish_robot_description_semantic
@@ -171,15 +260,26 @@ def launch_setup(context, *args, **kwargs):
     ompl_planning_pipeline_config["move_group"].update(ompl_planning_yaml)
 
     # Trajectory Execution Configuration
-    controllers_yaml = load_yaml("main_simulation", "config/controllers.yaml")
+    ur5_controllers_yaml = load_yaml("main_simulation", "config/controllers_ur5.yaml")
+    ur3_controllers_yaml = load_yaml("main_simulation", "config/controllers_ur3.yaml")
     # the scaled_joint_trajectory_controller does not work on fake hardware
-    change_controllers = context.perform_substitution(use_fake_hardware)
-    if change_controllers == "true":
-        controllers_yaml["scaled_joint_trajectory_controller"]["default"] = False
-        controllers_yaml["joint_trajectory_controller"]["default"] = True
+    ur5_change_controllers = context.perform_substitution(use_fake_hardware)
+    if ur5_change_controllers == "true":
+        ur5_controllers_yaml["scaled_joint_trajectory_controller"]["default"] = False
+        ur5_controllers_yaml["joint_trajectory_controller"]["default"] = True
 
-    moveit_controllers = {
-        "moveit_simple_controller_manager": controllers_yaml,
+    ur5_moveit_controllers = {
+        "moveit_simple_controller_manager": ur5_controllers_yaml,
+        "moveit_controller_manager": "moveit_simple_controller_manager/MoveItSimpleControllerManager",
+    }
+    
+    ur3_change_controllers = context.perform_substitution(use_fake_hardware)
+    if ur3_change_controllers == "true":
+        ur3_controllers_yaml["scaled_joint_trajectory_controller"]["default"] = False
+        ur3_controllers_yaml["joint_trajectory_controller"]["default"] = True
+
+    ur3_moveit_controllers = {
+        "moveit_simple_controller_manager": ur3_controllers_yaml,
         "moveit_controller_manager": "moveit_simple_controller_manager/MoveItSimpleControllerManager",
     }
 
@@ -203,19 +303,40 @@ def launch_setup(context, *args, **kwargs):
     }
 
     # Start the actual move_group node/action server
-    move_group_node = Node(
+    ur5_move_group_node = Node(
         package="moveit_ros_move_group",
         executable="move_group",
+        namespace="robot1",
         output="screen",
         parameters=[
-            robot_description,
-            robot_description_semantic,
+            ur5_robot_description,
+            ur5_robot_description_semantic,
             publish_robot_description_semantic,
             robot_description_kinematics,
             robot_description_planning,
             ompl_planning_pipeline_config,
             trajectory_execution,
-            moveit_controllers,
+            ur5_moveit_controllers,
+            planning_scene_monitor_parameters,
+            {"use_sim_time": use_sim_time},
+            warehouse_ros_config,
+        ],
+    )
+    
+    ur3_move_group_node = Node(
+        package="moveit_ros_move_group",
+        executable="move_group",
+        namespace="robot2",
+        output="screen",
+        parameters=[
+            ur3_robot_description,
+            ur3_robot_description_semantic,
+            publish_robot_description_semantic,
+            robot_description_kinematics,
+            robot_description_planning,
+            ompl_planning_pipeline_config,
+            trajectory_execution,
+            ur3_moveit_controllers,
             planning_scene_monitor_parameters,
             {"use_sim_time": use_sim_time},
             warehouse_ros_config,
@@ -249,8 +370,8 @@ def launch_setup(context, *args, **kwargs):
         output="log",
         arguments=["-d", rviz_config_file],
         parameters=[
-            robot_description,
-            robot_description_semantic,
+            ur5_robot_description,
+            ur5_robot_description_semantic,
             ompl_planning_pipeline_config,
             robot_description_kinematics,
             robot_description_planning,
@@ -259,21 +380,36 @@ def launch_setup(context, *args, **kwargs):
     )
 
     # Servo node for realtime control
-    servo_yaml = load_yaml("main_simulation", "config/ur_servo.yaml")
-    servo_params = {"moveit_servo": servo_yaml}
-    servo_node = Node(
+    ur5_servo_yaml = load_yaml("main_simulation", "config/ur5_servo.yaml")
+    ur5_servo_params = {"moveit_servo": ur5_servo_yaml}
+    ur5_servo_node = Node(
         package="moveit_servo",
         condition=IfCondition(launch_servo),
+        namespace="robot1",
         executable="servo_node_main",
         parameters=[
-            servo_params,
-            robot_description,
-            robot_description_semantic,
+            ur5_servo_params,
+            ur5_robot_description,
+            ur5_robot_description_semantic,
         ],
         output="screen",
     )
+    # servo_yaml = load_yaml("main_simulation", "config/ur_servo.yaml")
+    # servo_params = {"moveit_servo": servo_yaml}
+    # servo_node = Node(
+    #     package="moveit_servo",
+    #     condition=IfCondition(launch_servo),
+    #     executable="servo_node_main",
+    #     parameters=[
+    #         servo_params,
+    #         robot_description,
+    #         robot_description_semantic,
+    #     ],
+    #     output="screen",
+    # )
 
-    nodes_to_start = [move_group_node, rviz_node, servo_node, collisions_node, world_1_node]
+    # nodes_to_start = [ur5_move_group_node, ur3_move_group_node, rviz_node, servo_node, collisions_node, world_1_node]
+    nodes_to_start = [ur5_move_group_node, ur3_move_group_node, ur5_servo_node, rviz_node, world_1_node]
 
     return nodes_to_start
 
@@ -284,7 +420,14 @@ def generate_launch_description():
     # UR specific arguments
     declared_arguments.append(
         DeclareLaunchArgument(
-            "ur_type",
+            "ur5_type",
+            description="Type/series of used UR robot.",
+            choices=["ur3", "ur3e", "ur5", "ur5e", "ur10", "ur10e", "ur16e", "ur20", "ur30"],
+        )
+    )
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "ur3_type",
             description="Type/series of used UR robot.",
             choices=["ur3", "ur3e", "ur5", "ur5e", "ur10", "ur10e", "ur16e", "ur20", "ur30"],
         )
@@ -328,8 +471,15 @@ def generate_launch_description():
     )
     declared_arguments.append(
         DeclareLaunchArgument(
-            "description_file",
-            default_value="ur.urdf.xacro",
+            "description_file_ur5",
+            default_value="ur5.urdf.xacro",
+            description="URDF/XACRO description file with the robot.",
+        )
+    )
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "description_file_ur3",
+            default_value="ur3.urdf.xacro",
             description="URDF/XACRO description file with the robot.",
         )
     )
@@ -350,8 +500,15 @@ def generate_launch_description():
     )
     declared_arguments.append(
         DeclareLaunchArgument(
-            "moveit_config_file",
-            default_value="ur.srdf.xacro",
+            "ur5_moveit_config_file",
+            default_value="ur5.srdf.xacro",
+            description="MoveIt SRDF/XACRO description file with the robot.",
+        )
+    )
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "ur3_moveit_config_file",
+            default_value="ur3.srdf.xacro",
             description="MoveIt SRDF/XACRO description file with the robot.",
         )
     )
@@ -378,7 +535,16 @@ def generate_launch_description():
     )
     declared_arguments.append(
         DeclareLaunchArgument(
-            "prefix",
+            "ur5_prefix",
+            default_value='""',
+            description="Prefix of the joint names, useful for "
+            "multi-robot setup. If changed than also joint names in the controllers' configuration "
+            "have to be updated.",
+        )
+    )
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "ur3_prefix",
             default_value='""',
             description="Prefix of the joint names, useful for "
             "multi-robot setup. If changed than also joint names in the controllers' configuration "

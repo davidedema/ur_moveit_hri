@@ -2,7 +2,7 @@
 <robot xmlns:xacro="http://wiki.ros.org/xacro" name="$(arg name)">
 
   <!-- robot name parameter -->
-  <xacro:arg name="name" default="ur"/>
+  <xacro:arg name="name" default="ur5"/>
   <!-- parameters -->
   <xacro:arg name="prefix" default="" />
 
