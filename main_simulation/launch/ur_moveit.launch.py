@@ -56,7 +56,8 @@ def launch_setup(context, *args, **kwargs):
     description_file_ur5 = LaunchConfiguration("description_file_ur5")
     _publish_robot_description_semantic = LaunchConfiguration("publish_robot_description_semantic")
     moveit_config_package = LaunchConfiguration("moveit_config_package")
-    moveit_joint_limits_file = LaunchConfiguration("moveit_joint_limits_file")
+    moveit_joint_limits_file_ur5 = LaunchConfiguration("moveit_joint_limits_file_ur5")
+    moveit_joint_limits_file_ur3 = LaunchConfiguration("moveit_joint_limits_file_ur3")
     ur5_moveit_config_file = LaunchConfiguration("ur5_moveit_config_file")
     ur3_moveit_config_file = LaunchConfiguration("ur3_moveit_config_file")
     warehouse_sqlite_path = LaunchConfiguration("warehouse_sqlite_path")
@@ -241,10 +242,16 @@ def launch_setup(context, *args, **kwargs):
         [FindPackageShare(moveit_config_package), "config", "kinematics.yaml"]
     )
 
-    robot_description_planning = {
+    robot1_description_planning = {
         "robot_description_planning": load_yaml(
             str(moveit_config_package.perform(context)),
-            os.path.join("config", str(moveit_joint_limits_file.perform(context))),
+            os.path.join("config", str(moveit_joint_limits_file_ur5.perform(context))),
+        )
+    }
+    robot2_description_planning = {
+        "robot_description_planning": load_yaml(
+            str(moveit_config_package.perform(context)),
+            os.path.join("config", str(moveit_joint_limits_file_ur3.perform(context))),
         )
     }
 
@@ -313,7 +320,7 @@ def launch_setup(context, *args, **kwargs):
             ur5_robot_description_semantic,
             publish_robot_description_semantic,
             robot_description_kinematics,
-            robot_description_planning,
+            robot1_description_planning,
             ompl_planning_pipeline_config,
             trajectory_execution,
             ur5_moveit_controllers,
@@ -333,7 +340,7 @@ def launch_setup(context, *args, **kwargs):
             ur3_robot_description_semantic,
             publish_robot_description_semantic,
             robot_description_kinematics,
-            robot_description_planning,
+            robot2_description_planning,
             ompl_planning_pipeline_config,
             trajectory_execution,
             ur3_moveit_controllers,
@@ -374,7 +381,7 @@ def launch_setup(context, *args, **kwargs):
             ur5_robot_description_semantic,
             ompl_planning_pipeline_config,
             robot_description_kinematics,
-            robot_description_planning,
+            robot1_description_planning,
             warehouse_ros_config,
         ],
     )
@@ -394,22 +401,24 @@ def launch_setup(context, *args, **kwargs):
         ],
         output="screen",
     )
-    # servo_yaml = load_yaml("main_simulation", "config/ur_servo.yaml")
-    # servo_params = {"moveit_servo": servo_yaml}
-    # servo_node = Node(
-    #     package="moveit_servo",
-    #     condition=IfCondition(launch_servo),
-    #     executable="servo_node_main",
-    #     parameters=[
-    #         servo_params,
-    #         robot_description,
-    #         robot_description_semantic,
-    #     ],
-    #     output="screen",
-    # )
+
+    ur3_servo_yaml = load_yaml("main_simulation", "config/ur3_servo.yaml")
+    ur3_servo_params = {"moveit_servo": ur3_servo_yaml}
+    ur3_servo_node = Node(
+        package="moveit_servo",
+        condition=IfCondition(launch_servo),
+        namespace="robot2",
+        executable="servo_node_main",
+        parameters=[
+            ur3_servo_params,
+            ur3_robot_description,
+            ur3_robot_description_semantic,
+        ],
+        output="screen",
+    )
 
     # nodes_to_start = [ur5_move_group_node, ur3_move_group_node, rviz_node, servo_node, collisions_node, world_1_node]
-    nodes_to_start = [ur5_move_group_node, ur3_move_group_node, ur5_servo_node, rviz_node, world_1_node]
+    nodes_to_start = [ur5_move_group_node, ur3_move_group_node, ur5_servo_node, ur3_servo_node, rviz_node, world_1_node]
 
     return nodes_to_start
 
@@ -514,8 +523,15 @@ def generate_launch_description():
     )
     declared_arguments.append(
         DeclareLaunchArgument(
-            "moveit_joint_limits_file",
-            default_value="joint_limits.yaml",
+            "moveit_joint_limits_file_ur5",
+            default_value="joint_limits_ur5.yaml",
+            description="MoveIt joint limits that augment or override the values from the URDF robot_description.",
+        )
+    )
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "moveit_joint_limits_file_ur3",
+            default_value="joint_limits_ur3.yaml",
             description="MoveIt joint limits that augment or override the values from the URDF robot_description.",
         )
     )

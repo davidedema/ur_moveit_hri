@@ -5,32 +5,32 @@
 # cases. For specific applications, higher values might lead to better execution performance.
 
 joint_limits:
-  shoulder_pan_joint:
+  robot2shoulder_pan_joint:
     has_acceleration_limits: true
     has_velocity_limits: true
     max_acceleration: 5.0
     max_velocity: 0.9
-  shoulder_lift_joint:
+  robot2shoulder_lift_joint:
     has_acceleration_limits: true
     has_velocity_limits: true
     max_acceleration: 5.0
     max_velocity: 0.9
-  elbow_joint:
+  robot2elbow_joint:
     has_acceleration_limits: true
     has_velocity_limits: true
     max_acceleration: 5.0
     max_velocity: 0.9
-  wrist_1_joint:
+  robot2wrist_1_joint:
     has_acceleration_limits: true
     has_velocity_limits: true
     max_acceleration: 5.0
     max_velocity: 0.9
-  wrist_2_joint:
+  robot2wrist_2_joint:
     has_acceleration_limits: true
     has_velocity_limits: true
     max_acceleration: 5.0
     max_velocity: 0.9
-  wrist_3_joint:
+  robot2wrist_3_joint:
     has_acceleration_limits: true
     has_velocity_limits: true
     max_acceleration: 5.0

@@ -42,12 +42,12 @@ is_primary_planning_scene_monitor: false
 low_pass_filter_coeff: 10.0  # Larger --> trust the filtered data more, trust the measurements less.
 
 ## MoveIt properties
-move_group_name:  ur_manipulator  # Often 'manipulator' or 'arm'
-planning_frame: base_link  # The MoveIt planning frame. Often 'base_link' or 'world'
+move_group_name:  robot2ur3_manipulator  # Often 'manipulator' or 'arm'
+planning_frame: robot2base_link  # The MoveIt planning frame. Often 'base_link' or 'world'
 
 ## Other frames
-ee_frame_name: tool0  # The name of the end effector link, used to return the EE pose
-robot_link_command_frame:  tool0  # commands must be given in the frame of a robot link. Usually either the base or end effector
+ee_frame_name: robot2tool0  # The name of the end effector link, used to return the EE pose
+robot_link_command_frame:  robot2tool0  # commands must be given in the frame of a robot link. Usually either the base or end effector
 
 ## Stopping behaviour
 incoming_command_timeout:  0.1  # Stop servoing if X seconds elapse without a new command
@@ -63,9 +63,9 @@ joint_limit_margin: 0.1 # added as a buffer to joint limits [radians]. If moving
 ## Topic names
 cartesian_command_in_topic: ~/delta_twist_cmds  # Topic for incoming Cartesian twist commands
 joint_command_in_topic: ~/delta_joint_cmds # Topic for incoming joint angle commands
-joint_topic: /joint_states
+joint_topic: /robot2/joint_states
 status_topic: ~/status # Publish status to this topic
-command_out_topic: /forward_position_controller/commands # Publish outgoing commands here
+command_out_topic: /robot2/forward_position_controller/commands # Publish outgoing commands here
 
 ## Collision checking for the entire robot body
 check_collisions: true # Check collisions?
