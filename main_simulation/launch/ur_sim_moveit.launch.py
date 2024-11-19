@@ -49,7 +49,8 @@ def launch_setup(context, *args, **kwargs):
     description_file_ur3 = LaunchConfiguration("description_file_ur3")
     description_file_ur5 = LaunchConfiguration("description_file_ur5")
     moveit_config_package = LaunchConfiguration("moveit_config_package")
-    moveit_config_file = LaunchConfiguration("moveit_config_file")
+    moveit_config_file_ur5 = LaunchConfiguration("moveit_config_file_ur5")
+    moveit_config_file_ur3 = LaunchConfiguration("moveit_config_file_ur3")
     prefix_ur5 = LaunchConfiguration("ur5_prefix")
     prefix_ur3 = LaunchConfiguration("ur3_prefix")
 
@@ -85,7 +86,8 @@ def launch_setup(context, *args, **kwargs):
             "description_file_ur5": description_file_ur5,
             "description_file_ur3": description_file_ur3,
             "moveit_config_package": moveit_config_package,
-            "moveit_config_file": moveit_config_file,
+            "ur5_moveit_config_file": moveit_config_file_ur5,
+            "ur3_moveit_config_file": moveit_config_file_ur3,
             "ur5_prefix": prefix_ur5,
             "ur3_prefix": prefix_ur3,
             "use_sim_time": "true",
@@ -183,8 +185,15 @@ def generate_launch_description():
     )
     declared_arguments.append(
         DeclareLaunchArgument(
-            "moveit_config_file",
-            default_value="ur.srdf.xacro",
+            "moveit_config_file_ur3",
+            default_value="ur3.srdf.xacro",
+            description="MoveIt SRDF/XACRO description file with the robot.",
+        )
+    )
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "moveit_config_file_ur5",
+            default_value="ur5.srdf.xacro",
             description="MoveIt SRDF/XACRO description file with the robot.",
         )
     )

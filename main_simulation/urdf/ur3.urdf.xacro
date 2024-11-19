@@ -118,7 +118,7 @@
         <parameters>$(find main_simulation)/config/ur3_controllers.yaml</parameters>
         <ros>
           <namespace>robot2</namespace>
-          <remapping>/tf:=/robot2/tf</remapping>
+          <!-- <remapping>/tf:=/robot2/tf</remapping> -->
         </ros>
         <parameters>$(arg simulation_controllers)</parameters>
       </plugin>

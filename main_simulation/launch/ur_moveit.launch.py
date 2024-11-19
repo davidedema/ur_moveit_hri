@@ -256,15 +256,25 @@ def launch_setup(context, *args, **kwargs):
     }
 
     # Planning Configuration
-    ompl_planning_pipeline_config = {
+    ompl_planning_pipeline_config_ur5 = {
         "move_group": {
             "planning_plugin": "ompl_interface/OMPLPlanner",
             "request_adapters": """default_planner_request_adapters/AddTimeOptimalParameterization default_planner_request_adapters/FixWorkspaceBounds default_planner_request_adapters/FixStartStateBounds default_planner_request_adapters/FixStartStateCollision default_planner_request_adapters/FixStartStatePathConstraints""",
             "start_state_max_bounds_error": 0.1,
         }
     }
-    ompl_planning_yaml = load_yaml("main_simulation", "config/ompl_planning.yaml")
-    ompl_planning_pipeline_config["move_group"].update(ompl_planning_yaml)
+    
+    ompl_planning_pipeline_config_ur3 = {
+        "move_group": {
+            "planning_plugin": "ompl_interface/OMPLPlanner",
+            "request_adapters": """default_planner_request_adapters/AddTimeOptimalParameterization default_planner_request_adapters/FixWorkspaceBounds default_planner_request_adapters/FixStartStateBounds default_planner_request_adapters/FixStartStateCollision default_planner_request_adapters/FixStartStatePathConstraints""",
+            "start_state_max_bounds_error": 0.1,
+        }
+    }
+    ompl_planning_yaml_ur5 = load_yaml("main_simulation", "config/ompl_planning_ur5.yaml")
+    ompl_planning_yaml_ur3 = load_yaml("main_simulation", "config/ompl_planning_ur3.yaml")
+    ompl_planning_pipeline_config_ur5["move_group"].update(ompl_planning_yaml_ur5)
+    ompl_planning_pipeline_config_ur3["move_group"].update(ompl_planning_yaml_ur3)
 
     # Trajectory Execution Configuration
     ur5_controllers_yaml = load_yaml("main_simulation", "config/controllers_ur5.yaml")
@@ -321,7 +331,7 @@ def launch_setup(context, *args, **kwargs):
             publish_robot_description_semantic,
             robot_description_kinematics,
             robot1_description_planning,
-            ompl_planning_pipeline_config,
+            ompl_planning_pipeline_config_ur5,
             trajectory_execution,
             ur5_moveit_controllers,
             planning_scene_monitor_parameters,
@@ -341,7 +351,7 @@ def launch_setup(context, *args, **kwargs):
             publish_robot_description_semantic,
             robot_description_kinematics,
             robot2_description_planning,
-            ompl_planning_pipeline_config,
+            ompl_planning_pipeline_config_ur3,
             trajectory_execution,
             ur3_moveit_controllers,
             planning_scene_monitor_parameters,
@@ -353,6 +363,10 @@ def launch_setup(context, *args, **kwargs):
     # rviz with moveit configuration
     rviz_config_file = PathJoinSubstitution(
         [FindPackageShare(moveit_config_package), "rviz", "view_robot_moveit.rviz"]
+    )
+    
+    rviz_config_file_ur3 = PathJoinSubstitution(
+        [FindPackageShare(moveit_config_package), "rviz", "view_robot_moveit_ur3.rviz"]
     )
     
     collisions_node = Node(package="main_simulation",
@@ -369,7 +383,7 @@ def launch_setup(context, *args, **kwargs):
                         "3.14", "0.0", "3.14",
                         "world", "world1"])
     
-    rviz_node = Node(
+    rviz_node_ur5 = Node(
         package="rviz2",
         condition=IfCondition(launch_rviz),
         executable="rviz2",
@@ -379,9 +393,26 @@ def launch_setup(context, *args, **kwargs):
         parameters=[
             ur5_robot_description,
             ur5_robot_description_semantic,
-            ompl_planning_pipeline_config,
+            ompl_planning_pipeline_config_ur5,
             robot_description_kinematics,
             robot1_description_planning,
+            warehouse_ros_config,
+        ],
+    )
+    
+    rviz_node_ur3 = Node(
+        package="rviz2",
+        condition=IfCondition(launch_rviz),
+        executable="rviz2",
+        name="rviz2_moveit",
+        output="log",
+        arguments=["-d", rviz_config_file_ur3],
+        parameters=[
+            ur3_robot_description,
+            ur3_robot_description_semantic,
+            ompl_planning_pipeline_config_ur3,
+            robot_description_kinematics,
+            robot2_description_planning,
             warehouse_ros_config,
         ],
     )
@@ -418,7 +449,8 @@ def launch_setup(context, *args, **kwargs):
     )
 
     # nodes_to_start = [ur5_move_group_node, ur3_move_group_node, rviz_node, servo_node, collisions_node, world_1_node]
-    nodes_to_start = [ur5_move_group_node, ur3_move_group_node, ur5_servo_node, ur3_servo_node, rviz_node, world_1_node]
+    nodes_to_start = [ur5_move_group_node, ur3_move_group_node, ur5_servo_node, ur3_servo_node, rviz_node_ur5, rviz_node_ur3, world_1_node]
+    # nodes_to_start = [ur3_move_group_node, ur3_servo_node, rviz_node_ur3, world_1_node]
 
     return nodes_to_start
 

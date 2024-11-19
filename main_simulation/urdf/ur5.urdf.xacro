@@ -117,7 +117,7 @@
         <!-- <controller_manager_node_name>/robot1/controller_manager</controller_manager_node_name> -->
         <ros>
           <namespace>robot1</namespace>
-          <remapping>/tf:=/robot1/tf</remapping>
+          <!-- <remappings>/tf:=/robot1/tf</remappings> -->
         </ros>
         <parameters>$(arg simulation_controllers)</parameters>
       </plugin>
