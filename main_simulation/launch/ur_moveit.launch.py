@@ -448,9 +448,8 @@ def launch_setup(context, *args, **kwargs):
         output="screen",
     )
 
-    # nodes_to_start = [ur5_move_group_node, ur3_move_group_node, rviz_node, servo_node, collisions_node, world_1_node]
-    nodes_to_start = [ur5_move_group_node, ur3_move_group_node, ur5_servo_node, ur3_servo_node, rviz_node_ur5, rviz_node_ur3, world_1_node]
-    # nodes_to_start = [ur3_move_group_node, ur3_servo_node, rviz_node_ur3, world_1_node]
+    # nodes_to_start = [ur5_move_group_node, ur3_move_group_node, ur5_servo_node, ur3_servo_node, rviz_node_ur5, rviz_node_ur3, world_1_node]
+    nodes_to_start = [ur5_move_group_node, ur3_move_group_node, world_1_node]
 
     return nodes_to_start
 

@@ -35,6 +35,8 @@ install(TARGETS
 
 add_executable(motion_node src/motion_node.cpp)
 
+add_executable(poc_motion src/example_motion.cpp)
+
 ament_target_dependencies(motion_node
     geometry_msgs
     rclcpp
@@ -45,11 +47,26 @@ ament_target_dependencies(motion_node
     moveit_servo
 )
 
+ament_target_dependencies(poc_motion
+    geometry_msgs
+    rclcpp
+    std_msgs
+    moveit_ros_planning_interface
+    moveit_ros_move_group
+    moveit_msgs
+    moveit_servo
+)
+
 target_compile_features(motion_node PUBLIC c_std_99 cxx_std_17)
+target_compile_features(poc_motion PUBLIC c_std_99 cxx_std_17)
 
 
 install(TARGETS
     motion_node
+    DESTINATION lib/${PROJECT_NAME})
+
+install(TARGETS
+    poc_motion
     DESTINATION lib/${PROJECT_NAME})
 
 install(

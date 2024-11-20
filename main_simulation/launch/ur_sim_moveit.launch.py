@@ -33,6 +33,7 @@ from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, Opaq
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.substitutions import FindPackageShare
+from launch_ros.actions import Node
 
 
 def launch_setup(context, *args, **kwargs):
@@ -74,6 +75,13 @@ def launch_setup(context, *args, **kwargs):
         }.items(),
     )
 
+    motion_node = Node(
+        package="main_simulation",
+        executable="poc_motion",
+        namespace="/robot1",
+        name="motion",
+    )
+    
     ur_moveit_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [FindPackageShare("main_simulation"), "/launch", "/ur_moveit.launch.py"]
@@ -99,6 +107,7 @@ def launch_setup(context, *args, **kwargs):
     nodes_to_launch = [
         ur_control_launch,
         ur_moveit_launch,
+        motion_node,
     ]
 
     return nodes_to_launch
