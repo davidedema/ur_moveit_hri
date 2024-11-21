@@ -99,7 +99,7 @@ def launch_setup(context, *args, **kwargs):
             " ",
             PathJoinSubstitution([FindPackageShare(description_package), "urdf", description_file_ur5]),
             " ",
-            "robot_ip:=192.168.0.100",
+            "robot_ip:=192.168.56.1",
             " ",
             "joint_limit_params:=",
             ur5_joint_limit_params,
@@ -123,7 +123,7 @@ def launch_setup(context, *args, **kwargs):
             safety_k_position,
             " ",
             "name:=",
-            "ur5",
+            "ur5e",
             " ",
             "ur_type:=",
             ur5_type,
@@ -149,7 +149,7 @@ def launch_setup(context, *args, **kwargs):
             " ",
             PathJoinSubstitution([FindPackageShare(description_package), "urdf", description_file_ur3]),
             " ",
-            "robot_ip:=192.168.0.100",
+            "robot_ip:=192.168.56.1",
             " ",
             "joint_limit_params:=",
             ur3_joint_limit_params,
@@ -205,7 +205,7 @@ def launch_setup(context, *args, **kwargs):
             "name:=",
             # Also ur_type parameter could be used but then the planning group names in yaml
             # configs has to be updated!
-            "ur5",
+            "ur5e",
             " ",
             "prefix:=",
             prefix_ur5,
@@ -449,7 +449,7 @@ def launch_setup(context, *args, **kwargs):
     )
 
     # nodes_to_start = [ur5_move_group_node, ur3_move_group_node, ur5_servo_node, ur3_servo_node, rviz_node_ur5, rviz_node_ur3, world_1_node]
-    nodes_to_start = [ur5_move_group_node, ur3_move_group_node, world_1_node]
+    nodes_to_start = [ur5_move_group_node, ur5_servo_node, rviz_node_ur5, world_1_node]
 
     return nodes_to_start
 
@@ -583,7 +583,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "ur5_prefix",
-            default_value='""',
+            default_value='"robot1"',
             description="Prefix of the joint names, useful for "
             "multi-robot setup. If changed than also joint names in the controllers' configuration "
             "have to be updated.",

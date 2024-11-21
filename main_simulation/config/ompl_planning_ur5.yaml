@@ -52,7 +52,8 @@ planner_configs:
     max_nearest_neighbors: 10  # use k nearest neighbors. default: 10
   PRMstarkConfigDefault:
     type: geometric::PRMstar
-robot1ur5_manipulator:
+
+robot1ur5e_manipulator:
   default_planner_config: RRTstarkConfigDefault
   planner_configs:
     - SBLkConfigDefault

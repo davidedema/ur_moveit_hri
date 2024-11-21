@@ -222,6 +222,7 @@ def launch_setup(context, *args, **kwargs):
     control_node = Node(
         package="controller_manager",
         executable="ros2_control_node",
+        namespace="robot1",
         parameters=[
             robot_description,
             update_rate_config_file,
@@ -234,6 +235,7 @@ def launch_setup(context, *args, **kwargs):
     ur_control_node = Node(
         package="ur_robot_driver",
         executable="ur_ros2_control_node",
+        namespace="robot1",
         parameters=[
             robot_description,
             update_rate_config_file,
@@ -248,6 +250,7 @@ def launch_setup(context, *args, **kwargs):
         condition=IfCondition(
             AndSubstitution(launch_dashboard_client, NotSubstitution(use_fake_hardware))
         ),
+        namespace="robot1",
         executable="dashboard_client",
         name="dashboard_client",
         output="screen",
@@ -256,6 +259,7 @@ def launch_setup(context, *args, **kwargs):
     )
 
     tool_communication_node = Node(
+        namespace="robot1",
         package="ur_robot_driver",
         condition=IfCondition(use_tool_communication),
         executable="tool_communication.py",
@@ -272,6 +276,7 @@ def launch_setup(context, *args, **kwargs):
 
     urscript_interface = Node(
         package="ur_robot_driver",
+        namespace="robot1",
         executable="urscript_interface",
         parameters=[{"robot_ip": robot_ip}],
         output="screen",
@@ -280,6 +285,7 @@ def launch_setup(context, *args, **kwargs):
     controller_stopper_node = Node(
         package="ur_robot_driver",
         executable="controller_stopper_node",
+        namespace="robot1",
         name="controller_stopper",
         output="screen",
         emulate_tty=True,
@@ -300,6 +306,7 @@ def launch_setup(context, *args, **kwargs):
 
     robot_state_publisher_node = Node(
         package="robot_state_publisher",
+        namespace="robot1",
         executable="robot_state_publisher",
         output="both",
         parameters=[robot_description],
@@ -320,9 +327,10 @@ def launch_setup(context, *args, **kwargs):
         return Node(
             package="controller_manager",
             executable="spawner",
+            namespace="robot1", 
             arguments=[
                 "--controller-manager",
-                "/controller_manager",
+                "/robot1/controller_manager",
                 "--controller-manager-timeout",
                 controller_spawner_timeout,
             ]
@@ -346,10 +354,11 @@ def launch_setup(context, *args, **kwargs):
     initial_joint_controller_spawner_started = Node(
         package="controller_manager",
         executable="spawner",
+        namespace="robot1",
         arguments=[
             initial_joint_controller,
             "-c",
-            "/controller_manager",
+            "/robot1/controller_manager",
             "--controller-manager-timeout",
             controller_spawner_timeout,
         ],
@@ -358,10 +367,11 @@ def launch_setup(context, *args, **kwargs):
     initial_joint_controller_spawner_stopped = Node(
         package="controller_manager",
         executable="spawner",
+        namespace="robot1",
         arguments=[
             initial_joint_controller,
             "-c",
-            "/controller_manager",
+            "/robot1/controller_manager",
             "--controller-manager-timeout",
             controller_spawner_timeout,
             "--inactive",
@@ -440,7 +450,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "description_package",
-            default_value="main_simulation",
+            default_value="ur_description",
             description="Description package with robot URDF/XACRO files. Usually the argument "
             "is not set, it enables use of a custom description.",
         )
@@ -469,7 +479,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "tf_prefix",
-            default_value="",
+            default_value="robot1",
             description="tf_prefix of the joint names, useful for "
             "multi-robot setup. If changed, also joint names in the controllers' configuration "
             "have to be updated.",
@@ -493,7 +503,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "headless_mode",
-            default_value="true",
+            default_value="false",
             description="Enable headless mode for robot control",
         )
     )
