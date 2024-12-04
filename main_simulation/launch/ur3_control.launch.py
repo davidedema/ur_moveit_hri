@@ -618,28 +618,28 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "script_command_port",
-            default_value="50004",
+            default_value="40004",
             description="Port that will be opened to forward URScript commands to the robot.",
         )
     )
     declared_arguments.append(
         DeclareLaunchArgument(
             "reverse_port",
-            default_value="50001",
+            default_value="40001",
             description="Port that will be opened to send cyclic instructions from the driver to the robot controller.",
         )
     )
     declared_arguments.append(
         DeclareLaunchArgument(
             "script_sender_port",
-            default_value="50002",
+            default_value="40002",
             description="The driver will offer an interface to query the external_control URScript on this port.",
         )
     )
     declared_arguments.append(
         DeclareLaunchArgument(
             "trajectory_port",
-            default_value="50003",
+            default_value="40003",
             description="Port that will be opened for trajectory control.",
         )
     )
