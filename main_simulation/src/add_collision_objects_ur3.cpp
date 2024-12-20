@@ -29,16 +29,16 @@ void publish_moving_object(rclcpp::Publisher<moveit_msgs::msg::PlanningScene>::S
   geometry_msgs::msg::TransformStamped forearmtransform_stamped;
   try
   {
-    wrist_1transform_stamped = tf_buffer_->lookupTransform("world", "robot1wrist_1_link", rclcpp::Time(0));
-    wrist_2transform_stamped = tf_buffer_->lookupTransform("world", "robot1wrist_2_link", rclcpp::Time(0));
-    wrist_3transform_stamped = tf_buffer_->lookupTransform("world", "robot1wrist_3_link", rclcpp::Time(0));
-    shoulder_linktransform_stamped = tf_buffer_->lookupTransform("world", "robot1shoulder_link", rclcpp::Time(0));
-    upper_armtransform_stamped = tf_buffer_->lookupTransform("world", "robot1upper_arm_link", rclcpp::Time(0));
-    forearmtransform_stamped = tf_buffer_->lookupTransform("robot1base_link", "robot1forearm_link", rclcpp::Time(0));
+    wrist_1transform_stamped = tf_buffer_->lookupTransform("world", "robot2wrist_1_link", rclcpp::Time(0));
+    wrist_2transform_stamped = tf_buffer_->lookupTransform("world", "robot2wrist_2_link", rclcpp::Time(0));
+    wrist_3transform_stamped = tf_buffer_->lookupTransform("world", "robot2wrist_3_link", rclcpp::Time(0));
+    shoulder_linktransform_stamped = tf_buffer_->lookupTransform("world", "robot2shoulder_link", rclcpp::Time(0));
+    upper_armtransform_stamped = tf_buffer_->lookupTransform("world", "robot2upper_arm_link", rclcpp::Time(0));
+    forearmtransform_stamped = tf_buffer_->lookupTransform("world", "robot2forearm_link", rclcpp::Time(0));
   }
   catch (tf2::TransformException &ex)
   {
-    RCLCPP_WARN(LOGGER, "Could not transform robot1wrist_1_link to world: %s", ex.what());
+    RCLCPP_WARN(LOGGER, "Could not transform robot2wrist_1_link to world: %s", ex.what());
     return;
   }
 
@@ -66,7 +66,7 @@ void publish_moving_object(rclcpp::Publisher<moveit_msgs::msg::PlanningScene>::S
   upper_object.id = "upper_object";
 
   moveit_msgs::msg::CollisionObject forearm_object;
-  forearm_object.header.frame_id = "robot1base_link";
+  forearm_object.header.frame_id = "world";
   forearm_object.id = "forearm_object";
 
   //----------------------------------------------------------------
@@ -102,14 +102,14 @@ void publish_moving_object(rclcpp::Publisher<moveit_msgs::msg::PlanningScene>::S
   shape_msgs::msg::SolidPrimitive upper_box;
   upper_box.type = upper_box.BOX;
   upper_box.dimensions.resize(3);
-  upper_box.dimensions[0] = 1; // Length
+  upper_box.dimensions[0] = 0.4; // Length
   upper_box.dimensions[1] = 0.2;  // Width
-  upper_box.dimensions[2] = 0.4;  // Height
+  upper_box.dimensions[2] = 0.2;  // Height
 
   shape_msgs::msg::SolidPrimitive forearm_box;
   forearm_box.type = forearm_box.BOX;
   forearm_box.dimensions.resize(3);
-  forearm_box.dimensions[0] = 1;  // Length
+  forearm_box.dimensions[0] = 0.3;  // Length
   forearm_box.dimensions[1] = 0.15; // Width
   forearm_box.dimensions[2] = 0.15; // Height
 
@@ -152,8 +152,8 @@ void publish_moving_object(rclcpp::Publisher<moveit_msgs::msg::PlanningScene>::S
 
   geometry_msgs::msg::Pose pose_fore;
   pose_fore.position.x = forearmtransform_stamped.transform.translation.x;
-  pose_fore.position.y = forearmtransform_stamped.transform.translation.y;
-  pose_fore.position.z = forearmtransform_stamped.transform.translation.z;
+  pose_fore.position.y = forearmtransform_stamped.transform.translation.y+0.1;
+  pose_fore.position.z = forearmtransform_stamped.transform.translation.z+0.1;
 
   pose_fore.orientation = forearmtransform_stamped.transform.rotation;
   //----------------------------------------------------------------
@@ -193,116 +193,116 @@ void publish_moving_object(rclcpp::Publisher<moveit_msgs::msg::PlanningScene>::S
 
   //----------------------------------------------------------------
 
-  // Next we will create a collision object in the way of the arm. As the arm is servoed towards it, it will slow down
-  // and stop before colliding
-  moveit_msgs::msg::CollisionObject desk;
-  moveit_msgs::msg::CollisionObject electric_panel;
-  moveit_msgs::msg::CollisionObject wall;
-  moveit_msgs::msg::CollisionObject top_plate;
-  moveit_msgs::msg::CollisionObject plug;
+  // // Next we will create a collision object in the way of the arm. As the arm is servoed towards it, it will slow down
+  // // and stop before colliding
+  // moveit_msgs::msg::CollisionObject desk;
+  // moveit_msgs::msg::CollisionObject electric_panel;
+  // moveit_msgs::msg::CollisionObject wall;
+  // moveit_msgs::msg::CollisionObject top_plate;
+  // moveit_msgs::msg::CollisionObject plug;
 
-  // define reference frame
-  desk.header.frame_id = "robot1base_link";
-  electric_panel.header.frame_id = "robot1base_link";
-  wall.header.frame_id = "robot1base_link";
-  top_plate.header.frame_id = "robot1base_link";
-  plug.header.frame_id = "robot1base_link";
+  // // define reference frame
+  // desk.header.frame_id = "robot2base_link";
+  // electric_panel.header.frame_id = "robot2base_link";
+  // wall.header.frame_id = "robot2base_link";
+  // top_plate.header.frame_id = "robot2base_link";
+  // plug.header.frame_id = "robot2base_link";
 
-  desk.id = "desk";
-  electric_panel.id = "electric_panel";
-  wall.id = "wall";
-  top_plate.id = "top_plate";
+  // desk.id = "desk";
+  // electric_panel.id = "electric_panel";
+  // wall.id = "wall";
+  // top_plate.id = "top_plate";
 
-  shape_msgs::msg::SolidPrimitive primitive1, primitive2, primitive3, primitive4, primitive5;
-  // defining desk's collision
-  primitive1.type = primitive1.BOX;
-  primitive1.dimensions.resize(3);
-  primitive1.dimensions[0] = 0.85;
-  primitive1.dimensions[1] = 1.0;
-  primitive1.dimensions[2] = 0.8675;
-  // defining electric panel's collision
-  primitive2.type = primitive2.BOX;
-  primitive2.dimensions.resize(3);
-  primitive2.dimensions[0] = 0.175;
-  primitive2.dimensions[1] = 1;
-  primitive2.dimensions[2] = 0.175;
-  // defining wall's collision
-  primitive3.type = primitive3.BOX;
-  primitive3.dimensions.resize(3);
-  primitive3.dimensions[0] = 0.05;
-  primitive3.dimensions[1] = 1;
-  primitive3.dimensions[2] = 2;
-  // defining top plate's collision
-  primitive4.type = primitive4.BOX;
-  // primitive4.type = primitive3.BOX;
-  primitive4.dimensions.resize(3);
-  primitive4.dimensions[0] = 0.5;
-  primitive4.dimensions[1] = 1;
-  primitive4.dimensions[2] = 0.05;
-  // defining electric plug's collision
-  primitive5.type = primitive5.BOX;
-  primitive5.dimensions.resize(3);
-  primitive5.dimensions[0] = 0.1;
-  primitive5.dimensions[1] = 0.12;
-  primitive5.dimensions[2] = 0.09;
+  // shape_msgs::msg::SolidPrimitive primitive1, primitive2, primitive3, primitive4, primitive5;
+  // // defining desk's collision
+  // primitive1.type = primitive1.BOX;
+  // primitive1.dimensions.resize(3);
+  // primitive1.dimensions[0] = 0.85;
+  // primitive1.dimensions[1] = 1.0;
+  // primitive1.dimensions[2] = 0.8675;
+  // // defining electric panel's collision
+  // primitive2.type = primitive2.BOX;
+  // primitive2.dimensions.resize(3);
+  // primitive2.dimensions[0] = 0.175;
+  // primitive2.dimensions[1] = 1;
+  // primitive2.dimensions[2] = 0.175;
+  // // defining wall's collision
+  // primitive3.type = primitive3.BOX;
+  // primitive3.dimensions.resize(3);
+  // primitive3.dimensions[0] = 0.05;
+  // primitive3.dimensions[1] = 1;
+  // primitive3.dimensions[2] = 2;
+  // // defining top plate's collision
+  // primitive4.type = primitive4.BOX;
+  // // primitive4.type = primitive3.BOX;
+  // primitive4.dimensions.resize(3);
+  // primitive4.dimensions[0] = 0.5;
+  // primitive4.dimensions[1] = 1;
+  // primitive4.dimensions[2] = 0.05;
+  // // defining electric plug's collision
+  // primitive5.type = primitive5.BOX;
+  // primitive5.dimensions.resize(3);
+  // primitive5.dimensions[0] = 0.1;
+  // primitive5.dimensions[1] = 0.12;
+  // primitive5.dimensions[2] = 0.09;
 
-  geometry_msgs::msg::Pose desk_pose, electric_panel_pose, wall_pose, top_plate_pose, plug_pose;
-  // defining desk's pose
-  desk_pose.orientation.w = -0.707;
-  desk_pose.orientation.z = 0.707;
-  desk_pose.position.x = -0.0;
-  desk_pose.position.y = 0.08;
-  desk_pose.position.z = Z_BASE_LINK - 0.867 / 2;
-  // defining electric panel's pose
-  electric_panel_pose.orientation.w = -0.707;
-  electric_panel_pose.orientation.z = 0.707;
-  electric_panel_pose.position.x = 0;
-  electric_panel_pose.position.y = -0.255;
-  electric_panel_pose.position.z = 0.92 - 0.075;
-  // defining wall's pose
-  wall_pose.orientation.z = 0.707;
-  wall_pose.orientation.w = -0.707;
-  wall_pose.position.x = 0;
-  wall_pose.position.y = -0.375;
-  wall_pose.position.z = 1;
-  // defining top plate's pose
-  top_plate_pose.orientation.z = 0.707;
-  top_plate_pose.orientation.w = -0.707;
-  top_plate_pose.position.x = 0;
-  top_plate_pose.position.y = -0.15;
-  top_plate_pose.position.z = -0.026;
-  // defining plug's pose
-  plug_pose.orientation.z = 0.707;
-  plug_pose.orientation.w = -0.707;
-  plug_pose.position.x = 0.44;
-  plug_pose.position.y = -0.2;
-  plug_pose.position.z = 0.92 - 0.06;
+  // geometry_msgs::msg::Pose desk_pose, electric_panel_pose, wall_pose, top_plate_pose, plug_pose;
+  // // defining desk's pose
+  // desk_pose.orientation.w = -0.707;
+  // desk_pose.orientation.z = 0.707;
+  // desk_pose.position.x = -0.0;
+  // desk_pose.position.y = 0.08;
+  // desk_pose.position.z = Z_BASE_LINK - 0.867 / 2;
+  // // defining electric panel's pose
+  // electric_panel_pose.orientation.w = -0.707;
+  // electric_panel_pose.orientation.z = 0.707;
+  // electric_panel_pose.position.x = 0;
+  // electric_panel_pose.position.y = -0.255;
+  // electric_panel_pose.position.z = 0.92 - 0.075;
+  // // defining wall's pose
+  // wall_pose.orientation.z = 0.707;
+  // wall_pose.orientation.w = -0.707;
+  // wall_pose.position.x = 0;
+  // wall_pose.position.y = -0.375;
+  // wall_pose.position.z = 1;
+  // // defining top plate's pose
+  // top_plate_pose.orientation.z = 0.707;
+  // top_plate_pose.orientation.w = -0.707;
+  // top_plate_pose.position.x = 0;
+  // top_plate_pose.position.y = -0.15;
+  // top_plate_pose.position.z = -0.026;
+  // // defining plug's pose
+  // plug_pose.orientation.z = 0.707;
+  // plug_pose.orientation.w = -0.707;
+  // plug_pose.position.x = 0.44;
+  // plug_pose.position.y = -0.2;
+  // plug_pose.position.z = 0.92 - 0.06;
 
-  desk.primitives.push_back(primitive1);
-  desk.primitive_poses.push_back(desk_pose);
-  desk.operation = desk.ADD;
+  // desk.primitives.push_back(primitive1);
+  // desk.primitive_poses.push_back(desk_pose);
+  // desk.operation = desk.ADD;
 
-  electric_panel.primitives.push_back(primitive2);
-  electric_panel.primitive_poses.push_back(electric_panel_pose);
-  electric_panel.operation = electric_panel.ADD;
+  // electric_panel.primitives.push_back(primitive2);
+  // electric_panel.primitive_poses.push_back(electric_panel_pose);
+  // electric_panel.operation = electric_panel.ADD;
 
-  wall.primitives.push_back(primitive3);
-  wall.primitive_poses.push_back(wall_pose);
-  wall.operation = wall.ADD;
+  // wall.primitives.push_back(primitive3);
+  // wall.primitive_poses.push_back(wall_pose);
+  // wall.operation = wall.ADD;
 
-  top_plate.primitives.push_back(primitive4);
-  top_plate.primitive_poses.push_back(top_plate_pose);
-  top_plate.operation = top_plate.ADD;
+  // top_plate.primitives.push_back(primitive4);
+  // top_plate.primitive_poses.push_back(top_plate_pose);
+  // top_plate.operation = top_plate.ADD;
 
-  plug.primitives.push_back(primitive5);
-  plug.primitive_poses.push_back(plug_pose);
-  plug.operation = plug.ADD;
+  // plug.primitives.push_back(primitive5);
+  // plug.primitive_poses.push_back(plug_pose);
+  // plug.operation = plug.ADD;
 
-  psw.collision_objects.push_back(desk);
-  psw.collision_objects.push_back(electric_panel);
-  psw.collision_objects.push_back(wall);
-  psw.collision_objects.push_back(top_plate);
-  psw.collision_objects.push_back(plug);
+  // psw.collision_objects.push_back(desk);
+  // psw.collision_objects.push_back(electric_panel);
+  // psw.collision_objects.push_back(wall);
+  // psw.collision_objects.push_back(top_plate);
+  // psw.collision_objects.push_back(plug);
 
   moveit_msgs::msg::PlanningScene ps;
   ps.is_diff = true;

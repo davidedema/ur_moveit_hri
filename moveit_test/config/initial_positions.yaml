@@ -1,0 +1,15 @@
+# Default initial positions for ur5e's ros2_control fake system
+
+initial_positions:
+  robot1elbow_joint: 0
+  robot1shoulder_lift_joint: 0
+  robot1shoulder_pan_joint: 0
+  robot1wrist_1_joint: 0
+  robot1wrist_2_joint: 0
+  robot1wrist_3_joint: 0
+  robot2elbow_joint: 0
+  robot2shoulder_lift_joint: 0
+  robot2shoulder_pan_joint: 0
+  robot2wrist_1_joint: 0
+  robot2wrist_2_joint: 0
+  robot2wrist_3_joint: 0

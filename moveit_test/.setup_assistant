@@ -1,0 +1,25 @@
+moveit_setup_assistant_config:
+  urdf:
+    package: main_simulation
+    relative_path: urdf/mixed.urdf
+  srdf:
+    relative_path: config/ur5e.srdf
+  package_settings:
+    author_name: davide
+    author_email: davide@demartini.it
+    generated_timestamp: 1733759509
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+      - velocity
+  modified_urdf:
+    xacros:
+      - control_xacro
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+      - velocity

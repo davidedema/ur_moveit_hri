@@ -32,6 +32,20 @@ install(TARGETS
     collision_loader_node
     DESTINATION lib/${PROJECT_NAME})
 
+add_executable(collision_loader_node_ur3 src/add_collision_objects_ur3.cpp)
+
+ament_target_dependencies(collision_loader_node_ur3
+    rclcpp
+    moveit_ros_planning_interface
+    moveit_ros_move_group
+    moveit_msgs
+    moveit_servo
+)
+
+install(TARGETS
+    collision_loader_node_ur3
+    DESTINATION lib/${PROJECT_NAME})
+
 
 add_executable(motion_node src/motion_node.cpp)
 

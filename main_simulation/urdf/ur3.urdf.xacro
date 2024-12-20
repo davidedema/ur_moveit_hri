@@ -96,7 +96,8 @@
      script_sender_port="$(arg script_sender_port)"
      trajectory_port="$(arg trajectory_port)"
      >
-     <origin xyz="1 1 1" rpy="3.14159 0 3.14159" />          <!-- position robot in the world -->
+     <origin xyz="0 0.61 0.88" rpy="0 0 1.570795" />          <!-- position robot in the world -->
+     <!-- <origin xyz="0 0 1.79" rpy="3.14159 0 3.14159" />          position robot in the world -->
    </xacro:ur_robot>
    
      <!-- Gripper -->
