@@ -12,11 +12,13 @@ find_package(ament_cmake REQUIRED)
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(std_srvs REQUIRED)
 find_package(moveit_ros_planning_interface REQUIRED)
 find_package(moveit_ros_move_group REQUIRED)
 find_package(moveit_msgs REQUIRED)
 find_package(moveit_servo REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(bt_interfaces REQUIRED)
 
 add_executable(collision_loader_node src/add_collision_objects.cpp)
 
@@ -49,30 +51,47 @@ install(TARGETS
 
 add_executable(motion_node src/motion_node.cpp)
 
-add_executable(poc_motion src/example_motion.cpp)
+add_executable(motion_ur5 src/motion_ur5.cpp)
+add_executable(motion_ur3 src/motion_ur3.cpp)
 
 ament_target_dependencies(motion_node
     geometry_msgs
     rclcpp
     std_msgs
+    std_srvs
     moveit_ros_planning_interface
     moveit_ros_move_group
     moveit_msgs
     moveit_servo
 )
 
-ament_target_dependencies(poc_motion
+ament_target_dependencies(motion_ur5
     geometry_msgs
     rclcpp
     std_msgs
+    std_srvs
     moveit_ros_planning_interface
     moveit_ros_move_group
     moveit_msgs
     moveit_servo
+    bt_interfaces
+)
+
+ament_target_dependencies(motion_ur3
+    geometry_msgs
+    rclcpp
+    std_msgs
+    std_srvs
+    moveit_ros_planning_interface
+    moveit_ros_move_group
+    moveit_msgs
+    moveit_servo
+    bt_interfaces
 )
 
 target_compile_features(motion_node PUBLIC c_std_99 cxx_std_17)
-target_compile_features(poc_motion PUBLIC c_std_99 cxx_std_17)
+target_compile_features(motion_ur5 PUBLIC c_std_99 cxx_std_17)
+target_compile_features(motion_ur3 PUBLIC c_std_99 cxx_std_17)
 
 
 install(TARGETS
@@ -80,8 +99,12 @@ install(TARGETS
     DESTINATION lib/${PROJECT_NAME})
 
 install(TARGETS
-    poc_motion
+    motion_ur5
     DESTINATION lib/${PROJECT_NAME})
+
+install(TARGETS
+  motion_ur3
+  DESTINATION lib/${PROJECT_NAME})
 
 install(
   DIRECTORY launch urdf rviz config srdf scripts

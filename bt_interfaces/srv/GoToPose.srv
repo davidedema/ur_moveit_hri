@@ -1,0 +1,4 @@
+geometry_msgs/Pose pose
+bool rise_up
+---
+bool result

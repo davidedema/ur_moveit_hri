@@ -6,7 +6,7 @@ import time
 import rclpy
 from ament_index_python.packages import get_package_share_directory
 from rclpy.node import Node
-from std_msgs.msg import String
+from bt_interfaces.srv import Gripper
 from std_srvs.srv import Trigger
 
 
@@ -15,7 +15,7 @@ class GripperController(Node):
         super().__init__("gripper_controller_execution")
 
         # IP and port for the UR robot
-        self.HOST = "192.168.0.100"
+        self.HOST = "192.168.1.35"
         self.PORT = 30002
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.connect((self.HOST, self.PORT))
@@ -25,25 +25,23 @@ class GripperController(Node):
             get_package_share_directory("main_simulation"), "scripts"
         )
 
-        # Subscriber to the gripper command topic
-        self.subscription = self.create_subscription(
-            String, "gripper_controller_cmd", self.callback, 10
-        )
+        # Create service server called gripper_controller_cmd of type std_srvs/srv/string
+        self.sub = self.create_service(Gripper, "/robot1/gripper", self.callback)
 
-    def callback(self, data):
-        print(f"received: {data.data}")
+    def callback(self, request, response):
+        print(f"received: {request.command}")
         script = ""
-        if data.data == "open1":
-            script = os.path.join(self.path, "open1.script")
-        elif data.data == "open2":
-            script = os.path.join(self.path, "open2.script")
-        elif data.data == "open3":
+        if request.command.lower().startswith('o'):
             script = os.path.join(self.path, "open3.script")
-        elif data.data == "close":
+            response.status = "Opening gripper 3"
+        elif request.command.lower().startswith('c'):
             script = os.path.join(self.path, "close.script")
+            response.status = "Closing gripper"
         else:
-            self.get_logger().info("Invalid argument!")
-            return
+            response.status = f"Invalid argument {request.command}"
+            response.success = False
+            self.get_logger().info(response.status)
+            return response
 
         try:
             with open(script, "rb") as f:
@@ -55,7 +53,7 @@ class GripperController(Node):
             time.sleep(1.0)
                     
             # Call service /io_and_status_controller/resend_robot_program sending std_srvs/srv/Trigger
-            client = self.create_client(Trigger, "/io_and_status_controller/resend_robot_program")
+            client = self.create_client(Trigger, "/robot1/io_and_status_controller/resend_robot_program")
             while not client.wait_for_service(timeout_sec=1.0):
                 self.get_logger().info("Service not available, waiting again...")
             request = Trigger.Request()
@@ -64,8 +62,15 @@ class GripperController(Node):
             
         except FileNotFoundError:
             self.get_logger().error(f"Script file {script} not found.")
+            response.status = F"Error: script {script} not found"
+            response.success = False
         except Exception as e:
             self.get_logger().error(f"Error while sending the script: {e}")
+            response.status = f"Error while sending the script {e}"
+            response.success = False
+            
+        response.success = True
+        return response
 
 
 def main(args=None):

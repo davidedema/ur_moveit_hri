@@ -93,39 +93,25 @@ def launch_setup(context, *args, **kwargs):
         [FindPackageShare(description_package), "config", ur5_type, "visual_parameters.yaml"]
     )
 
-    mixed_robot_description_content = Command(
+    ur5_robot_description_content = Command(
         [
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
             PathJoinSubstitution([FindPackageShare(description_package), "urdf", description_file_ur5]),
             " ",
-            "robot1_ip:=192.168.56.1",
+            "robot_ip:=192.168.56.1",
             " ",
-            "robot2_ip:=192.168.56.2",
-            " ",
-            "robot1_joint_limit_params:=",
+            "joint_limit_params:=",
             ur5_joint_limit_params,
             " ",
-            "robot1_kinematics_params:=",
+            "kinematics_params:=",
             ur5_kinematics_params,
             " ",
-            "robot1_physical_params:=",
+            "physical_params:=",
             ur5_physical_params,
             " ",
-            "robot1_visual_params:=",
+            "visual_params:=",
             ur5_visual_params,
-            " ",
-            "robot2_joint_limit_params:=",
-            ur3_joint_limit_params,
-            " ",
-            "robot2_kinematics_params:=",
-            ur3_kinematics_params,
-            " ",
-            "robot2_physical_params:=",
-            ur3_physical_params,
-            " ",
-            "robot2_visual_params:=",
-            ur3_visual_params,
             " ",
             "safety_limits:=",
             safety_limits,
@@ -139,10 +125,57 @@ def launch_setup(context, *args, **kwargs):
             "name:=",
             "ur5e",
             " ",
-            "ur5_type:=",
+            "ur_type:=",
             ur5_type,
             " ",
-            "ur3_type:=",
+            "script_filename:=ros_control.urscript",
+            " ",
+            "input_recipe_filename:=rtde_input_recipe.txt",
+            " ",
+            "output_recipe_filename:=rtde_output_recipe.txt",
+            " ",
+            "tf_prefix:=",
+            prefix_ur5,
+            " ",
+        ]
+    )
+    
+    ur5_robot_description = {"robot_description": ur5_robot_description_content}
+    
+    
+    ur3_robot_description_content = Command(
+        [
+            PathJoinSubstitution([FindExecutable(name="xacro")]),
+            " ",
+            PathJoinSubstitution([FindPackageShare(description_package), "urdf", description_file_ur3]),
+            " ",
+            "robot_ip:=192.168.56.1",
+            " ",
+            "joint_limit_params:=",
+            ur3_joint_limit_params,
+            " ",
+            "kinematics_params:=",
+            ur3_kinematics_params,
+            " ",
+            "physical_params:=",
+            ur3_physical_params,
+            " ",
+            "visual_params:=",
+            ur3_visual_params,
+            " ",
+            "safety_limits:=",
+            safety_limits,
+            " ",
+            "safety_pos_margin:=",
+            safety_pos_margin,
+            " ",
+            "safety_k_position:=",
+            safety_k_position,
+            " ",
+            "name:=",
+            "ur3",
+            " ",
+            "ur_type:=",
             ur3_type,
             " ",
             "script_filename:=ros_control.urscript",
@@ -151,20 +184,17 @@ def launch_setup(context, *args, **kwargs):
             " ",
             "output_recipe_filename:=rtde_output_recipe.txt",
             " ",
-            "tf_prefix_ur5:=",
-            prefix_ur5,
-            " ",
-            "tf_prefix_ur3:=",
+            "tf_prefix:=",
             prefix_ur3,
             " ",
         ]
     )
     
+    ur3_robot_description = {"robot_description": ur3_robot_description_content}
     
-    ur5_robot_description = {"robot_description": mixed_robot_description_content}
 
     # MoveIt Configuration
-    mixed_robot_description_semantic_content = Command(
+    ur5_robot_description_semantic_content = Command(
         [
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
@@ -172,25 +202,37 @@ def launch_setup(context, *args, **kwargs):
                 [FindPackageShare(moveit_config_package), "srdf", ur5_moveit_config_file]
             ),
             " ",
-            "name_robot1:=",
+            "name:=",
             # Also ur_type parameter could be used but then the planning group names in yaml
             # configs has to be updated!
             "ur5e",
             " ",
-            "prefix_robot1:=",
+            "prefix:=",
             prefix_ur5,
             " ",
-            "name_robot2:=",
+        ]
+    )
+    ur5_robot_description_semantic = {"robot_description_semantic": ur5_robot_description_semantic_content}
+    
+    ur3_robot_description_semantic_content = Command(
+        [
+            PathJoinSubstitution([FindExecutable(name="xacro")]),
+            " ",
+            PathJoinSubstitution(
+                [FindPackageShare(moveit_config_package), "srdf", ur3_moveit_config_file]
+            ),
+            " ",
+            "name:=",
             # Also ur_type parameter could be used but then the planning group names in yaml
             # configs has to be updated!
-            "ur3e",
+            "ur3",
             " ",
-            "prefix_robot2:=",
+            "prefix:=",
             prefix_ur3,
             " ",
         ]
     )
-    mixed_robot_description_semantic = {"robot_description_semantic": mixed_robot_description_semantic_content}
+    ur3_robot_description_semantic = {"robot_description_semantic": ur3_robot_description_semantic_content}
 
     publish_robot_description_semantic = {
         "publish_robot_description_semantic": _publish_robot_description_semantic
@@ -285,7 +327,7 @@ def launch_setup(context, *args, **kwargs):
         output="screen",
         parameters=[
             ur5_robot_description,
-            mixed_robot_description_semantic,
+            ur5_robot_description_semantic,
             publish_robot_description_semantic,
             robot_description_kinematics,
             robot1_description_planning,
@@ -304,8 +346,8 @@ def launch_setup(context, *args, **kwargs):
         namespace="robot2",
         output="screen",
         parameters=[
-            ur5_robot_description,
-            mixed_robot_description_semantic,
+            ur3_robot_description,
+            ur3_robot_description_semantic,
             publish_robot_description_semantic,
             robot_description_kinematics,
             robot2_description_planning,
@@ -330,13 +372,6 @@ def launch_setup(context, *args, **kwargs):
     collisions_node = Node(package="main_simulation",
              executable="collision_loader_node",
              name="collision_loader_node",
-             namespace="robot1",
-             output="screen"
-             )
-    collisions_node_ur3 = Node(package="main_simulation",
-             executable="collision_loader_node_ur3",
-             name="collision_loader_node_ur3",
-             namespace="robot2",
              output="screen"
              )
         
@@ -357,7 +392,7 @@ def launch_setup(context, *args, **kwargs):
         arguments=["-d", rviz_config_file],
         parameters=[
             ur5_robot_description,
-            mixed_robot_description_semantic,
+            ur5_robot_description_semantic,
             ompl_planning_pipeline_config_ur5,
             robot_description_kinematics,
             robot1_description_planning,
@@ -373,8 +408,8 @@ def launch_setup(context, *args, **kwargs):
         output="log",
         arguments=["-d", rviz_config_file_ur3],
         parameters=[
-            ur5_robot_description,
-            mixed_robot_description_semantic,
+            ur3_robot_description,
+            ur3_robot_description_semantic,
             ompl_planning_pipeline_config_ur3,
             robot_description_kinematics,
             robot2_description_planning,
@@ -393,7 +428,7 @@ def launch_setup(context, *args, **kwargs):
         parameters=[
             ur5_servo_params,
             ur5_robot_description,
-            mixed_robot_description_semantic,
+            ur5_robot_description_semantic,
         ],
         output="screen",
     )
@@ -407,15 +442,14 @@ def launch_setup(context, *args, **kwargs):
         executable="servo_node_main",
         parameters=[
             ur3_servo_params,
-            ur5_robot_description,
-            mixed_robot_description_semantic,
+            ur3_robot_description,
+            ur3_robot_description_semantic,
         ],
         output="screen",
     )
 
-    # nodes_to_start = [ur5_move_group_node, ur3_move_group_node, ur5_servo_node, ur3_servo_node, rviz_node_ur5, rviz_node_ur3, world_1_node]
+    nodes_to_start = [ur5_move_group_node, ur3_move_group_node, ur5_servo_node, ur3_servo_node, rviz_node_ur5, rviz_node_ur3, world_1_node]
     # nodes_to_start = [ur3_move_group_node, ur3_servo_node, rviz_node_ur3, collisions_node, world_1_node]
-    nodes_to_start = [ur5_move_group_node, ur5_servo_node, rviz_node_ur5, world_1_node]
 
     return nodes_to_start
 
@@ -478,14 +512,14 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "description_file_ur5",
-            default_value="mixed.urdf.xacro",
+            default_value="ur5.urdf.xacro",
             description="URDF/XACRO description file with the robot.",
         )
     )
     declared_arguments.append(
         DeclareLaunchArgument(
             "description_file_ur3",
-            default_value="mixed.urdf.xacro",
+            default_value="ur3.urdf.xacro",
             description="URDF/XACRO description file with the robot.",
         )
     )
@@ -507,14 +541,14 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "ur5_moveit_config_file",
-            default_value="mixed.srdf.xacro",
+            default_value="ur5.srdf.xacro",
             description="MoveIt SRDF/XACRO description file with the robot.",
         )
     )
     declared_arguments.append(
         DeclareLaunchArgument(
             "ur3_moveit_config_file",
-            default_value="mixed.srdf.xacro",
+            default_value="ur3.srdf.xacro",
             description="MoveIt SRDF/XACRO description file with the robot.",
         )
     )

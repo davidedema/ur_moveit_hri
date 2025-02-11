@@ -379,6 +379,34 @@ def launch_setup(context, *args, **kwargs):
         ],
         condition=UnlessCondition(activate_joint_controller),
     )
+    
+    initial_gripper_controller_spawner_started = Node(
+        package="controller_manager",
+        executable="spawner",
+        namespace="robot2",
+        arguments=[
+            "robotiq_gripper_controller",
+            "-c",
+            "/robot2/controller_manager",
+            "--controller-manager-timeout",
+            controller_spawner_timeout,
+        ],
+        condition=IfCondition(activate_joint_controller),
+    )
+    initial_gripper_controller_spawner_stopped = Node(
+        package="controller_manager",
+        executable="spawner",
+        namespace="robot2",
+        arguments=[
+            "robotiq_gripper_controller",
+            "-c",
+            "/robot2/controller_manager",
+            "--controller-manager-timeout",
+            controller_spawner_timeout,
+            "--inactive",
+        ],
+        condition=UnlessCondition(activate_joint_controller),
+    )
 
     nodes_to_start = [
         control_node,
@@ -391,6 +419,8 @@ def launch_setup(context, *args, **kwargs):
         rviz_node,
         initial_joint_controller_spawner_stopped,
         initial_joint_controller_spawner_started,
+        # initial_gripper_controller_spawner_stopped,
+        # initial_gripper_controller_spawner_started,
     ] + controller_spawners
 
     return nodes_to_start
@@ -459,7 +489,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "description_file",
-            default_value="ur5.urdf.xacro",
+            default_value="ur3.urdf.xacro",
             description="URDF/XACRO description file with the robot.",
         )
     )
@@ -518,7 +548,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "initial_joint_controller",
-            default_value="scaled_joint_trajectory_controller",
+            default_value="cartesian_motion_controller",
             description="Initially loaded robot controller.",
         )
     )
@@ -587,7 +617,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "tool_device_name",
-            default_value="/tmp/ttyUR",
+            default_value="/home/davide/ttyUR",
             description="File descriptor that will be generated for the tool communication device. "
             "The user has be be allowed to write to this location. "
             "Only effective, if use_tool_communication is set to True.",
@@ -596,7 +626,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "tool_tcp_port",
-            default_value="54321",
+            default_value="63352",
             description="Remote port that will be used for bridging the tool's serial device. "
             "Only effective, if use_tool_communication is set to True.",
         )

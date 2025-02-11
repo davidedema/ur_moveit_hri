@@ -128,7 +128,7 @@ def launch_setup(context, *args, **kwargs):
             safety_k_position,
             " ",
             "name:=",
-            "ur5",
+            "ur5e",
             " ",
             "ur_type:=",
             ur5_type,
@@ -220,6 +220,18 @@ def launch_setup(context, *args, **kwargs):
         arguments=[initial_joint_controller, "-c", "/robot2/controller_manager"],
         condition=IfCondition(start_joint_controller),
     )
+    initial_gripper_controller_spawner_stopped_ur3 = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["robotiq_gripper_controller", "-c", "/robot2/controller_manager", "--stopped"],
+        condition=UnlessCondition(start_joint_controller),
+    )
+    initial_gripper_controller_spawner_started_ur3 = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["robotiq_gripper_controller", "-c", "/robot2/controller_manager"],
+        condition=IfCondition(start_joint_controller),
+    )
     initial_joint_controller_spawner_stopped_ur3 = Node(
         package="controller_manager",
         executable="spawner",
@@ -237,6 +249,7 @@ def launch_setup(context, *args, **kwargs):
             "world": "/home/davide/Desktop/ws_ur/src/main_simulation/worlds/lab.world"
         }.items(),
     )
+
 
     # Spawn robot
     gazebo_spawn_robot1 = Node(
@@ -269,6 +282,8 @@ def launch_setup(context, *args, **kwargs):
         # delay_rviz_after_joint_state_broadcaster_spawner_ur3,
         initial_joint_controller_spawner_stopped_ur3,
         initial_joint_controller_spawner_started_ur3,
+        initial_gripper_controller_spawner_stopped_ur3,
+        initial_gripper_controller_spawner_started_ur3,
         gazebo,
         gazebo_spawn_robot1,
         gazebo_spawn_robot2,
@@ -365,7 +380,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "ur5_prefix",
-            default_value='""',
+            default_value='"robot1"',
             description="Prefix of the joint names, useful for \
         multi-robot setup. If changed than also joint names in the controllers' configuration \
         have to be updated.",
@@ -374,7 +389,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "ur3_prefix",
-            default_value='""',
+            default_value='"robot2"',
             description="Prefix of the joint names, useful for \
         multi-robot setup. If changed than also joint names in the controllers' configuration \
         have to be updated.",
@@ -390,7 +405,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "initial_joint_controller",
-            default_value="joint_trajectory_controller",
+            default_value="cartesian_motion_controller",
             description="Robot controller to start.",
         )
     )
